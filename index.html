@@ -1,0 +1,1424 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="台灣美食英文配對互動測驗">
+  <title>台灣美食英文配對</title>
+
+  <style>
+    :root {
+      --bg: #EAE0D5;
+      --ink: #2f2925;
+      --muted: #756b64;
+      --card: #fffaf4;
+      --line: #d7c6b8;
+      --accent: #b14f3e;
+      --accent-dark: #7c3026;
+      --correct: #8AFF86;
+      --wrong: #FF0000;
+      --shadow: 0 18px 50px rgba(84, 58, 39, .13);
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    button:focus-visible {
+      outline: 4px solid #315f9c;
+      outline-offset: 3px;
+    }
+
+    .site-header {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 26px 0 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      color: #fffaf4;
+      background: var(--accent);
+      box-shadow: 3px 3px 0 #8f382d;
+      font-size: 1.15rem;
+    }
+
+    .header-note {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .app {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 44px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+      animation: fade-in .3s ease both;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .hero {
+      min-height: min(690px, calc(100vh - 150px));
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: center;
+      gap: clamp(28px, 7vw, 92px);
+      padding: clamp(28px, 6vw, 76px);
+      border: 1px solid rgba(111, 78, 54, .12);
+      border-radius: 34px;
+      background: rgba(255, 250, 244, .7);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--accent-dark);
+      font-size: .95rem;
+      font-weight: 900;
+      letter-spacing: .16em;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 9em;
+      margin-bottom: 22px;
+      font-size: clamp(2.7rem, 6.2vw, 5.6rem);
+      line-height: 1.12;
+      letter-spacing: .03em;
+    }
+
+    .hero-copy {
+      max-width: 550px;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.7vw, 1.2rem);
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      min-height: 52px;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 26px;
+      cursor: pointer;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease,
+        background .18s ease;
+    }
+
+    .primary-btn {
+      color: #fffaf4;
+      background: var(--accent);
+      box-shadow: 0 7px 0 #80372d;
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 3px 0 #80372d;
+    }
+
+    .secondary-btn {
+      color: var(--accent-dark);
+      border: 2px solid var(--accent);
+      background: transparent;
+    }
+
+    .hero-art {
+      position: relative;
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+    }
+
+    .hero-art::before,
+    .hero-art::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      opacity: .5;
+    }
+
+    .hero-art::before {
+      width: 280px;
+      height: 280px;
+      background: #f3c77d;
+      transform: rotate(18deg);
+    }
+
+    .hero-art::after {
+      width: 140px;
+      height: 140px;
+      background: #b9d6a3;
+      right: 5%;
+      bottom: 6%;
+    }
+
+    .bowl-art {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 410px);
+      filter: drop-shadow(0 16px 10px rgba(75, 48, 30, .2));
+    }
+
+    .quiz-shell {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .quiz-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .progress-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: .95rem;
+      font-weight: 900;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: rgba(121, 84, 56, .16);
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+      transition: width .3s ease;
+    }
+
+    .question-card {
+      padding: clamp(20px, 4vw, 42px);
+      border: 1px solid rgba(111, 78, 54, .13);
+      border-radius: 28px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .question-visual {
+      display: grid;
+      grid-template-columns: minmax(180px, 270px) 1fr;
+      align-items: center;
+      gap: clamp(22px, 5vw, 48px);
+      margin-bottom: 30px;
+    }
+
+    .food-image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 22px;
+      background: #f5eee7;
+    }
+
+    .question-number {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .question-heading {
+      margin: 0 0 12px;
+      font-size: clamp(1.55rem, 3vw, 2.4rem);
+      line-height: 1.25;
+    }
+
+    .question-hint {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .option-btn {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 14px 18px;
+      color: var(--ink);
+      text-align: left;
+      border: 2px solid var(--line);
+      border-radius: 17px;
+      background: #fffdf9;
+      cursor: pointer;
+      font-size: 1.05rem;
+      font-weight: 800;
+      transition: transform .16s ease, border-color .16s ease,
+        background .16s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-letter {
+      display: grid;
+      place-items: center;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      color: var(--accent-dark);
+      background: #f2dfcc;
+      font-weight: 900;
+    }
+
+    .option-btn.is-correct {
+      border-color: #23911e;
+      background: var(--correct);
+      color: #10350e;
+    }
+
+    .option-btn.is-correct .option-letter {
+      color: #10350e;
+      background: rgba(255, 255, 255, .55);
+    }
+
+    .option-btn.is-wrong {
+      border-color: #980000;
+      background: var(--wrong);
+      color: #fff;
+    }
+
+    .option-btn.is-wrong .option-letter {
+      color: #650000;
+      background: #fff;
+    }
+
+    .answer-message {
+      min-height: 30px;
+      margin: 20px 0 0;
+      font-weight: 900;
+    }
+
+    .answer-message.correct {
+      color: #176c13;
+    }
+
+    .answer-message.wrong {
+      color: #8e0000;
+    }
+
+    .question-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .results-card {
+      max-width: 700px;
+      margin: 6vh auto 0;
+      padding: clamp(28px, 7vw, 66px);
+      text-align: center;
+      border: 1px solid rgba(111, 78, 54, .13);
+      border-radius: 32px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .result-icon {
+      font-size: 3rem;
+    }
+
+    .results-card h2 {
+      margin: 8px 0 10px;
+      font-size: clamp(2rem, 5vw, 3.8rem);
+    }
+
+    .score-number {
+      margin: 10px 0 18px;
+      color: var(--accent);
+      font-size: clamp(3rem, 10vw, 6rem);
+      font-weight: 1000;
+      line-height: 1;
+    }
+
+    .result-text {
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 700px) {
+      .site-header {
+        padding-top: 18px;
+      }
+
+      .header-note {
+        display: none;
+      }
+
+      .app {
+        width: min(100% - 20px, 1100px);
+        padding-top: 12px;
+      }
+
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+        padding: 30px 22px 26px;
+        border-radius: 24px;
+      }
+
+      .hero-art {
+        min-height: 230px;
+        order: -1;
+      }
+
+      .hero-art::before {
+        width: 210px;
+        height: 210px;
+      }
+
+      h1 {
+        font-size: clamp(2.6rem, 13vw, 4.2rem);
+      }
+
+      .question-visual {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .food-image {
+        width: min(100%, 270px);
+        margin: auto;
+      }
+
+      .options {
+        grid-template-columns: 1fr;
+      }
+
+      .quiz-top {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .progress-track {
+        order: 3;
+        flex-basis: 100%;
+      }
+
+      .question-card {
+        padding: 20px 16px;
+        border-radius: 22px;
+      }
+
+      .question-actions {
+        justify-content: stretch;
+      }
+
+      .question-actions .primary-btn {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">食</span>
+      <span>TAIWAN BITES</span>
+    </div>
+
+    <div class="header-note">
+      看圖、聽音、學英文
+    </div>
+  </header>
+
+  <main class="app">
+    <section id="start-screen" class="screen active" aria-labelledby="main-title">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">TAIWANESE FOOD × ENGLISH</p>
+
+          <h1 id="main-title">
+            台灣美食英文配對
+          </h1>
+
+          <p class="hero-copy">
+            準備好認識台灣味了嗎？每回合會從 20 道美食中隨機抽出 5 題。
+            點選選項時，還能聽聽正確的英文發音！
+          </p>
+
+          <button
+            id="start-button"
+            class="primary-btn"
+            type="button"
+            aria-label="開始台灣美食英文配對測驗">
+            開始測驗
+          </button>
+        </div>
+
+        <div class="hero-art" aria-hidden="true">
+          <svg
+            class="bowl-art"
+            viewBox="0 0 420 360"
+            role="img"
+            aria-label="台灣小吃插畫">
+            <path
+              d="M70 151 Q210 214 350 151 L327 263 Q210 328 93 263Z"
+              fill="#c44e3c"
+              stroke="#642f2b"
+              stroke-width="9" />
+
+            <path
+              d="M72 150 Q210 207 348 150 Q347 111 210 106 Q73 111 72 150Z"
+              fill="#efc48d"
+              stroke="#642f2b"
+              stroke-width="9" />
+
+            <path
+              d="M106 136 Q153 104 181 136 Q207 97 244 133 Q282 94 319 141"
+              fill="none"
+              stroke="#fff4df"
+              stroke-width="20"
+              stroke-linecap="round" />
+
+            <circle cx="143" cy="149" r="13" fill="#7c3026" />
+            <circle cx="210" cy="153" r="13" fill="#7c3026" />
+            <circle cx="279" cy="148" r="13" fill="#7c3026" />
+
+            <path
+              d="M118 214 Q210 246 302 214"
+              fill="none"
+              stroke="#f7d09b"
+              stroke-width="12"
+              stroke-linecap="round" />
+
+            <path
+              d="M114 274 Q210 309 306 274"
+              fill="none"
+              stroke="#8f382d"
+              stroke-width="7"
+              opacity=".6" />
+
+            <path
+              d="M115 68 Q90 31 116 16 Q139 43 154 77"
+              fill="#759b57"
+              stroke="#46633c"
+              stroke-width="6" />
+
+            <path
+              d="M307 76 Q329 34 355 45 Q347 74 322 94"
+              fill="#759b57"
+              stroke="#46633c"
+              stroke-width="6" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz-screen" class="screen" aria-labelledby="question-heading">
+      <div class="quiz-shell">
+        <div class="quiz-top">
+          <p id="progress-label" class="progress-label" aria-live="polite">
+            第 1 / 5 題
+          </p>
+
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="作答進度"
+            aria-valuemin="0"
+            aria-valuemax="5"
+            aria-valuenow="1">
+            <div
+              id="progress-bar"
+              class="progress-bar"
+              style="width: 20%">
+            </div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <div class="question-visual">
+            <img id="food-image" class="food-image" alt="">
+
+            <div>
+              <p id="question-number" class="question-number">
+                QUESTION 01
+              </p>
+
+              <h2 id="question-heading">
+                這道台灣美食的英文是？
+              </h2>
+
+              <p id="question-hint" class="question-hint">
+                看圖選出最適合的英文名稱。點選後會自動朗讀。
+              </p>
+            </div>
+          </div>
+
+          <div
+            id="options"
+            class="options"
+            role="group"
+            aria-label="英文答案選項">
+          </div>
+
+          <p
+            id="answer-message"
+            class="answer-message"
+            role="status"
+            aria-live="polite">
+          </p>
+
+          <div class="question-actions">
+            <button
+              id="next-button"
+              class="primary-btn"
+              type="button"
+              hidden>
+              下一題
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="result-screen" class="screen" aria-labelledby="result-title">
+      <div class="results-card">
+        <div class="result-icon" aria-hidden="true">✦</div>
+
+        <h2 id="result-title">
+          完成作答！
+        </h2>
+
+        <div id="score-number" class="score-number">
+          0 / 5
+        </div>
+
+        <p id="result-text" class="result-text">
+          答對了 0 題，繼續加油！
+        </p>
+
+        <div class="result-actions">
+          <button
+            id="retry-button"
+            class="primary-btn"
+            type="button">
+            錯題再練
+          </button>
+
+          <button
+            id="restart-button"
+            class="secondary-btn"
+            type="button">
+            重新開始
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const foods = [
+        { id: "beef-noodle", zh: "牛肉麵", en: "Beef noodle soup", color: "#b74b3b", type: "noodle" },
+        { id: "bubble-tea", zh: "珍珠奶茶", en: "Bubble tea", color: "#8b5a3c", type: "tea" },
+        { id: "oyster-omelet", zh: "蚵仔煎", en: "Oyster omelet", color: "#e28d42", type: "omelet" },
+        { id: "stinky-tofu", zh: "臭豆腐", en: "Stinky tofu", color: "#d6a84d", type: "tofu" },
+        { id: "scallion-pancake", zh: "蔥油餅", en: "Scallion pancake", color: "#b9823b", type: "pancake" },
+        { id: "chicken-rice", zh: "雞肉飯", en: "Chicken rice", color: "#e2b95e", type: "rice" },
+        { id: "braised-pork-rice", zh: "滷肉飯", en: "Braised pork rice", color: "#9a543c", type: "lu-rou" },
+        { id: "pepper-bun", zh: "胡椒餅", en: "Pepper bun", color: "#bd6d3a", type: "bun" },
+        { id: "pork-blood-cake", zh: "豬血糕", en: "Pork blood cake", color: "#51333c", type: "cake" },
+        { id: "turkey-rice", zh: "火雞肉飯", en: "Turkey rice", color: "#ba7545", type: "turkey" },
+        { id: "three-cup-chicken", zh: "三杯雞", en: "Three-cup chicken", color: "#a65c33", type: "chicken" },
+        { id: "taiwanese-sausage", zh: "台式香腸", en: "Taiwanese sausage", color: "#d6634c", type: "sausage" },
+        { id: "tang-yuan", zh: "湯圓", en: "Glutinous rice balls", color: "#e8a8aa", type: "tangyuan" },
+        { id: "pineapple-cake", zh: "鳳梨酥", en: "Pineapple cake", color: "#d6a048", type: "pineapple" },
+        { id: "sun-cake", zh: "太陽餅", en: "Sun cake", color: "#d99551", type: "sun-cake" },
+        { id: "dan-bing", zh: "蛋餅", en: "Egg crepe", color: "#efc45b", type: "danbing" },
+        { id: "lu-wei", zh: "滷味", en: "Braised snacks", color: "#805536", type: "luwei" },
+        { id: "fish-ball-soup", zh: "魚丸湯", en: "Fish ball soup", color: "#6e9cb0", type: "fishball" },
+        { id: "aiyu-jelly", zh: "愛玉冰", en: "Aiyu jelly", color: "#dbb65b", type: "aiyu" },
+        { id: "shaved-ice", zh: "芒果冰", en: "Mango shaved ice", color: "#f3a33d", type: "ice" }
+      ];
+
+      const screens = {
+        start: document.getElementById("start-screen"),
+        quiz: document.getElementById("quiz-screen"),
+        result: document.getElementById("result-screen")
+      };
+
+      const startButton = document.getElementById("start-button");
+      const nextButton = document.getElementById("next-button");
+      const retryButton = document.getElementById("retry-button");
+      const restartButton = document.getElementById("restart-button");
+
+      const progressLabel = document.getElementById("progress-label");
+      const progressBar = document.getElementById("progress-bar");
+      const progressTrack = progressBar.parentElement;
+
+      const foodImage = document.getElementById("food-image");
+      const questionNumber = document.getElementById("question-number");
+      const questionHeading = document.getElementById("question-heading");
+      const questionHint = document.getElementById("question-hint");
+      const options = document.getElementById("options");
+      const answerMessage = document.getElementById("answer-message");
+
+      const scoreNumber = document.getElementById("score-number");
+      const resultText = document.getElementById("result-text");
+
+      let roundQuestions = [];
+      let currentIndex = 0;
+      let score = 0;
+      let currentRoundMissedIds = [];
+      let answered = false;
+      let lastRoundWasRetry = false;
+
+      function svgData(svg) {
+        return "data:image/svg+xml;charset=UTF-8," +
+          encodeURIComponent(
+            svg.replace(/\n\s+/g, " ").trim()
+          );
+      }
+
+      function foodSvg(food) {
+        const bg =
+          "<rect width='500' height='500' rx='42' fill='#f8eee3'/>" +
+          "<circle cx='250' cy='250' r='194' fill='" +
+          food.color +
+          "' opacity='.14'/>" +
+          "<path d='M72 404 Q250 438 428 404' fill='none' stroke='#a5795c' stroke-width='8' opacity='.35'/>";
+
+        const plate =
+          "<ellipse cx='250' cy='356' rx='156' ry='35' fill='#b98c6d' opacity='.3'/>" +
+          "<ellipse cx='250' cy='324' rx='164' ry='58' fill='#fff8e9' stroke='#7c5140' stroke-width='8'/>";
+
+        const steam =
+          "<path d='M190 135 C160 104 214 87 184 56 M250 132 C220 96 275 79 246 48 M311 135 C282 103 336 84 307 55' fill='none' stroke='#d38c6d' stroke-width='9' stroke-linecap='round' opacity='.8'/>";
+
+        let art = "";
+
+        switch (food.type) {
+          case "noodle":
+            art =
+              steam +
+              plate +
+              "<path d='M115 292 Q250 384 385 292 L365 190 Q250 150 135 190Z' fill='#c64f3b' stroke='#70342f' stroke-width='9'/>" +
+              "<path d='M132 206 Q250 265 368 206' fill='none' stroke='#efc987' stroke-width='35' stroke-linecap='round'/>" +
+              "<path d='M150 226 Q244 284 350 226 M140 248 Q250 311 361 246 M158 270 Q250 325 341 271' fill='none' stroke='#f8e2a9' stroke-width='12' stroke-linecap='round'/>" +
+              "<ellipse cx='185' cy='201' rx='35' ry='18' fill='#6e352c'/>" +
+              "<ellipse cx='299' cy='210' rx='37' ry='18' fill='#6e352c'/>";
+            break;
+
+          case "tea":
+            art =
+              "<path d='M181 151 H319 L305 355 Q250 385 195 355Z' fill='#f4c98c' stroke='#704436' stroke-width='9'/>" +
+              "<path d='M181 151 H319 V207 H181Z' fill='#73472e'/>" +
+              "<path d='M173 151 H327' stroke='#704436' stroke-width='18' stroke-linecap='round'/>" +
+              "<path d='M319 218 Q383 208 371 271 Q364 306 319 288' fill='none' stroke='#704436' stroke-width='13'/>" +
+              "<g fill='#211a19'>" +
+              "<circle cx='218' cy='326' r='14'/>" +
+              "<circle cx='255' cy='337' r='14'/>" +
+              "<circle cx='290' cy='326' r='14'/>" +
+              "<circle cx='232' cy='294' r='14'/>" +
+              "<circle cx='270' cy='299' r='14'/>" +
+              "</g>" +
+              "<path d='M214 119 Q193 90 218 70 M274 119 Q250 88 277 67' fill='none' stroke='#d38c6d' stroke-width='9' stroke-linecap='round'/>";
+            break;
+
+          case "omelet":
+            art =
+              plate +
+              "<path d='M115 282 Q250 198 385 282 Q363 346 250 352 Q137 346 115 282Z' fill='#e8a34c' stroke='#8e4d2f' stroke-width='9'/>" +
+              "<path d='M134 277 Q250 220 365 278' fill='none' stroke='#ffe4a3' stroke-width='20'/>" +
+              "<path d='M162 283 Q200 302 218 277 M280 280 Q307 301 337 280' fill='none' stroke='#8f4e31' stroke-width='13' stroke-linecap='round'/>" +
+              "<g fill='#d17d46'>" +
+              "<circle cx='190' cy='268' r='11'/>" +
+              "<circle cx='255' cy='248' r='11'/>" +
+              "<circle cx='307' cy='269' r='11'/>" +
+              "</g>" +
+              "<path d='M180 319 Q250 335 320 319' stroke='#db6844' stroke-width='10' fill='none'/>";
+            break;
+
+          case "tofu":
+            art =
+              "<g fill='#e7bc63' stroke='#794b31' stroke-width='8'>" +
+              "<rect x='126' y='210' width='108' height='91' rx='14' transform='rotate(-13 126 210)'/>" +
+              "<rect x='225' y='193' width='112' height='100' rx='14' transform='rotate(11 225 193)'/>" +
+              "<rect x='174' y='278' width='118' height='83' rx='14' transform='rotate(-6 174 278)'/>" +
+              "</g>" +
+              "<path d='M130 178 Q178 147 220 175 M282 166 Q335 139 371 181' fill='none' stroke='#9db56a' stroke-width='19' stroke-linecap='round'/>" +
+              "<path d='M105 379 Q250 405 395 379' stroke='#783d33' stroke-width='10' fill='none'/>";
+            break;
+
+          case "pancake":
+            art =
+              plate +
+              "<circle cx='250' cy='270' r='101' fill='#d59646' stroke='#875131' stroke-width='9'/>" +
+              "<path d='M170 229 Q250 278 329 229 M156 270 Q250 317 344 270 M172 313 Q250 350 328 313' fill='none' stroke='#f8d78a' stroke-width='15' stroke-linecap='round'/>" +
+              "<g fill='#6e9a55'>" +
+              "<ellipse cx='207' cy='244' rx='17' ry='7' transform='rotate(-25 207 244)'/>" +
+              "<ellipse cx='291' cy='296' rx='17' ry='7' transform='rotate(-25 291 296)'/>" +
+              "<ellipse cx='267' cy='232' rx='15' ry='7' transform='rotate(20 267 232)'/>" +
+              "</g>";
+            break;
+
+          case "rice":
+            art =
+              plate +
+              "<path d='M115 287 Q250 217 385 287 Q360 347 250 353 Q140 347 115 287Z' fill='#f1f0d4' stroke='#73634c' stroke-width='8'/>" +
+              "<path d='M145 280 Q250 232 355 280' stroke='#fffdf1' stroke-width='24' fill='none'/>" +
+              "<g fill='#bf7740'>" +
+              "<path d='M169 274 Q188 230 213 264 L201 306 Q174 312 169 274Z'/>" +
+              "<path d='M230 270 Q253 218 276 264 L264 310 Q239 312 230 270Z'/>" +
+              "<path d='M286 276 Q308 229 333 267 L321 309 Q295 311 286 276Z'/>" +
+              "</g>" +
+              "<path d='M163 319 Q250 339 337 319' stroke='#ddab54' stroke-width='10' fill='none'/>";
+            break;
+
+          case "lu-rou":
+            art =
+              plate +
+              "<path d='M109 284 Q250 202 391 284 Q375 350 250 357 Q125 350 109 284Z' fill='#e8e0b8' stroke='#704539' stroke-width='8'/>" +
+              "<path d='M143 264 Q250 220 357 264' stroke='#fff6d7' stroke-width='23' fill='none'/>" +
+              "<g fill='#713d32'>" +
+              "<rect x='166' y='242' width='69' height='31' rx='13' transform='rotate(13 166 242)'/>" +
+              "<rect x='247' y='242' width='83' height='31' rx='13' transform='rotate(-15 247 242)'/>" +
+              "<rect x='202' y='285' width='82' height='31' rx='13' transform='rotate(-8 202 285)'/>" +
+              "</g>" +
+              "<path d='M154 219 Q171 195 188 219 M315 219 Q332 194 349 220' fill='none' stroke='#79a15a' stroke-width='13'/>";
+            break;
+
+          case "bun":
+            art =
+              "<path d='M119 295 Q104 208 174 165 Q250 118 326 165 Q396 208 381 295 Q343 356 250 359 Q157 356 119 295Z' fill='#d38a4b' stroke='#783d31' stroke-width='9'/>" +
+              "<path d='M139 245 Q250 290 361 245' fill='none' stroke='#f4d69b' stroke-width='16'/>" +
+              "<path d='M170 189 Q191 176 208 194 M238 162 Q255 150 272 167 M300 190 Q319 176 335 195' fill='none' stroke='#8a4a34' stroke-width='12' stroke-linecap='round'/>" +
+              "<circle cx='214' cy='259' r='8' fill='#4e332b'/>" +
+              "<circle cx='287' cy='274' r='8' fill='#4e332b'/>";
+            break;
+
+          case "cake":
+            art =
+              "<path d='M112 251 L350 205 L389 317 L150 367Z' fill='#51333c' stroke='#34232a' stroke-width='9'/>" +
+              "<path d='M135 253 L350 215 L365 250 L149 300Z' fill='#e7ba61'/>" +
+              "<path d='M166 321 L380 279' stroke='#8d5b47' stroke-width='17' opacity='.8'/>" +
+              "<path d='M173 278 L193 336 M236 264 L254 323 M300 250 L320 310' stroke='#d3a151' stroke-width='7'/>" +
+              "<path d='M105 193 Q125 157 157 183 M301 151 Q330 119 359 153' fill='none' stroke='#709653' stroke-width='17' stroke-linecap='round'/>";
+            break;
+
+          case "turkey":
+            art =
+              plate +
+              "<path d='M115 286 Q250 218 385 286 Q360 350 250 355 Q140 350 115 286Z' fill='#f0e7c8' stroke='#78604d' stroke-width='8'/>" +
+              "<path d='M145 276 Q250 236 355 276' stroke='#fff9df' stroke-width='26' fill='none'/>" +
+              "<path d='M168 256 Q194 220 220 255 L211 309 Q182 313 168 256Z M236 248 Q264 209 287 249 L277 311 Q247 311 236 248Z M301 258 Q326 222 348 260 L336 310 Q311 312 301 258Z' fill='#c37b4c'/>" +
+              "<path d='M164 326 Q250 343 336 326' stroke='#74a45c' stroke-width='12' fill='none'/>";
+            break;
+
+          case "chicken":
+            art =
+              plate +
+              "<path d='M132 285 Q250 222 368 285 Q343 350 250 356 Q157 350 132 285Z' fill='#dca758' stroke='#764433' stroke-width='8'/>" +
+              "<g fill='#a95634'>" +
+              "<path d='M157 278 Q175 230 207 267 L195 319 Q166 319 157 278Z'/>" +
+              "<path d='M218 263 Q239 215 270 260 L258 318 Q228 318 218 263Z'/>" +
+              "<path d='M280 274 Q301 226 333 267 L319 317 Q291 318 280 274Z'/>" +
+              "</g>" +
+              "<path d='M151 225 Q177 190 199 222 M303 220 Q331 188 350 224' stroke='#78a05a' stroke-width='14' fill='none' stroke-linecap='round'/>" +
+              "<circle cx='249' cy='290' r='12' fill='#85a75a'/>";
+            break;
+
+          case "sausage":
+            art =
+              "<path d='M127 292 C106 239 145 181 202 205 C237 221 237 263 262 282 C285 299 319 272 350 291 C399 322 365 376 322 361 C273 344 265 318 235 313 C199 306 151 347 127 292Z' fill='#d6634c' stroke='#713b34' stroke-width='10'/>" +
+              "<path d='M157 223 Q180 258 158 301 M208 216 Q229 254 206 311 M286 307 Q307 331 290 354 M336 299 Q354 327 340 355' fill='none' stroke='#f4b05d' stroke-width='10'/>" +
+              "<path d='M123 177 Q166 152 193 181 M300 177 Q339 150 371 181' stroke='#71995b' stroke-width='14' fill='none' stroke-linecap='round'/>";
+            break;
+
+          case "tangyuan":
+            art =
+              "<path d='M107 283 Q250 218 393 283 Q370 358 250 367 Q130 358 107 283Z' fill='#b66e4d' stroke='#693d36' stroke-width='8'/>" +
+              "<path d='M130 275 Q250 235 370 275' stroke='#f6efe0' stroke-width='27' fill='none'/>" +
+              "<g fill='#f8e2dd' stroke='#b75b62' stroke-width='6'>" +
+              "<circle cx='180' cy='262' r='30'/>" +
+              "<circle cx='250' cy='249' r='30'/>" +
+              "<circle cx='319' cy='263' r='30'/>" +
+              "</g>" +
+              "<path d='M164 315 Q250 344 336 315' stroke='#e6a56c' stroke-width='12' fill='none'/>";
+            break;
+
+          case "pineapple":
+            art =
+              "<path d='M156 206 Q250 170 344 206 L327 337 Q250 379 173 337Z' fill='#dba047' stroke='#754636' stroke-width='9'/>" +
+              "<path d='M174 218 Q250 249 326 218 M169 260 Q250 290 331 260 M173 301 Q250 330 327 300' stroke='#a76a38' stroke-width='8' fill='none'/>" +
+              "<path d='M174 196 Q143 132 177 102 Q191 146 211 180 M233 172 Q214 106 252 75 Q261 127 265 172 M294 182 Q292 116 337 106 Q318 150 318 204' fill='#6e9c57' stroke='#486b40' stroke-width='8'/>";
+            break;
+
+          case "sun-cake":
+            art =
+              "<path d='M250 117 L279 197 L362 175 L314 243 L391 283 L304 290 L320 378 L250 325 L180 378 L196 290 L109 283 L186 243 L138 175 L221 197Z' fill='#e6a35a' stroke='#8b5135' stroke-width='9'/>" +
+              "<circle cx='250' cy='250' r='83' fill='#f4c980' stroke='#a56339' stroke-width='8'/>" +
+              "<path d='M198 252 Q250 221 302 252 M206 279 Q250 305 294 279' fill='none' stroke='#fff0bf' stroke-width='17' stroke-linecap='round'/>";
+            break;
+
+          case "danbing":
+            art =
+              plate +
+              "<path d='M128 282 Q250 212 372 282 Q350 337 250 347 Q150 337 128 282Z' fill='#edc15b' stroke='#865033' stroke-width='9'/>" +
+              "<path d='M151 277 Q250 237 349 277' fill='none' stroke='#fff3bd' stroke-width='20'/>" +
+              "<path d='M159 296 Q250 335 341 296' fill='none' stroke='#c4783f' stroke-width='12'/>" +
+              "<circle cx='250' cy='270' r='26' fill='#f5df8d' stroke='#b47742' stroke-width='8'/>";
+            break;
+
+          case "luwei":
+            art =
+              "<path d='M123 235 H377 L353 363 Q250 400 147 363Z' fill='#7c503d' stroke='#49312d' stroke-width='9'/>" +
+              "<path d='M121 235 Q250 284 379 235 Q372 186 250 175 Q128 186 121 235Z' fill='#e9bc68' stroke='#49312d' stroke-width='9'/>" +
+              "<g stroke='#77433a' stroke-width='13' stroke-linecap='round'>" +
+              "<path d='M174 205 L174 302'/>" +
+              "<path d='M218 193 L218 315'/>" +
+              "<path d='M265 190 L265 308'/>" +
+              "<path d='M312 204 L312 300'/>" +
+              "</g>" +
+              "<path d='M150 349 Q250 377 350 349' stroke='#c78f50' stroke-width='10' fill='none'/>";
+            break;
+
+          case "fishball":
+            art =
+              "<path d='M116 298 Q250 240 384 298 Q364 367 250 373 Q136 367 116 298Z' fill='#8bb4be' stroke='#4c6870' stroke-width='9'/>" +
+              "<path d='M139 288 Q250 250 361 288' fill='none' stroke='#f9efd3' stroke-width='28'/>" +
+              "<g fill='#f4f0d5' stroke='#738f8f' stroke-width='6'>" +
+              "<circle cx='181' cy='273' r='32'/>" +
+              "<circle cx='250' cy='260' r='34'/>" +
+              "<circle cx='319' cy='273' r='32'/>" +
+              "</g>" +
+              "<path d='M157 333 Q250 355 343 333' stroke='#6e9b72' stroke-width='11' fill='none'/>" +
+              "<path d='M159 176 Q190 142 217 178 M283 177 Q312 142 341 177' stroke='#74a25d' stroke-width='15' fill='none' stroke-linecap='round'/>";
+            break;
+
+          case "aiyu":
+            art =
+              "<path d='M145 170 H355 L333 353 Q250 382 167 353Z' fill='#e8cb68' stroke='#73513b' stroke-width='9'/>" +
+              "<path d='M145 170 Q250 208 355 170 Q350 130 250 120 Q150 130 145 170Z' fill='#f9efd2' stroke='#73513b' stroke-width='9'/>" +
+              "<path d='M171 206 Q250 237 329 206 L316 315 Q250 339 184 315Z' fill='#9fcf9e' opacity='.9'/>" +
+              "<path d='M180 246 Q250 273 320 246' stroke='#d7edb4' stroke-width='9' fill='none'/>" +
+              "<circle cx='306' cy='150' r='15' fill='#e9964e'/>";
+            break;
+
+          case "ice":
+            art =
+              "<path d='M130 224 Q250 177 370 224 L337 355 Q250 385 163 355Z' fill='#fff1db' stroke='#704436' stroke-width='9'/>" +
+              "<path d='M143 232 Q250 280 357 232' fill='none' stroke='#e9f7f0' stroke-width='30'/>" +
+              "<path d='M177 217 Q250 156 323 217 Q305 264 250 281 Q195 264 177 217Z' fill='#f0a23d' stroke='#a75c35' stroke-width='8'/>" +
+              "<path d='M198 207 Q250 180 301 208' stroke='#ffcf65' stroke-width='13' fill='none'/>" +
+              "<path d='M170 317 Q250 350 330 317' stroke='#f0a1b0' stroke-width='15' fill='none'/>" +
+              "<path d='M177 143 Q146 115 174 91 M318 145 Q349 115 321 91' stroke='#75a35e' stroke-width='14' fill='none' stroke-linecap='round'/>";
+            break;
+        }
+
+        return (
+          "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500' " +
+          "role='img' aria-label='" +
+          food.zh +
+          " 插畫'>" +
+          bg +
+          art +
+          "</svg>"
+        );
+      }
+
+      function shuffle(items) {
+        const copy = items.slice();
+
+        for (let i = copy.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+
+        return copy;
+      }
+
+      function showScreen(name) {
+        Object.keys(screens).forEach((key) => {
+          screens[key].classList.toggle("active", key === name);
+        });
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      }
+
+      function getEnglishVoice() {
+        if (!("speechSynthesis" in window)) {
+          return null;
+        }
+
+        const voices = window.speechSynthesis.getVoices();
+        const preferredPrefixes = ["en-us", "en-gb", "en"];
+
+        for (const prefix of preferredPrefixes) {
+          const voice = voices.find((candidate) => {
+            const language = String(candidate.lang || "").toLowerCase();
+
+            return language === prefix ||
+              language.startsWith(prefix + "-");
+          });
+
+          if (voice) {
+            return voice;
+          }
+        }
+
+        return null;
+      }
+
+      function stopSpeech() {
+        if (!("speechSynthesis" in window)) {
+          return;
+        }
+
+        try {
+          window.speechSynthesis.cancel();
+        } catch (error) {
+          // 瀏覽器不支援時忽略錯誤
+        }
+      }
+
+      function speakOption(button, fallbackFood) {
+        if (
+          !("speechSynthesis" in window) ||
+          !("SpeechSynthesisUtterance" in window)
+        ) {
+          return;
+        }
+
+        const visibleLabel = button &&
+          button.querySelector(".option-label");
+
+        const text = visibleLabel
+          ? visibleLabel.textContent.trim()
+          : (
+              fallbackFood && fallbackFood.en
+                ? fallbackFood.en
+                : ""
+            );
+
+        if (!text) {
+          return;
+        }
+
+        try {
+          window.speechSynthesis.cancel();
+
+          const utterance = new SpeechSynthesisUtterance(text);
+          const voice = getEnglishVoice();
+
+          if (voice) {
+            utterance.voice = voice;
+            utterance.lang = voice.lang || "en-US";
+          } else {
+            utterance.lang = "en-US";
+          }
+
+          utterance.rate = 0.86;
+          utterance.pitch = 1;
+
+          window.speechSynthesis.speak(utterance);
+        } catch (error) {
+          // 語音失敗時不影響作答
+        }
+      }
+
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.addEventListener(
+          "voiceschanged",
+          getEnglishVoice
+        );
+      }
+
+      function makeOptions(correctFood) {
+        const distractors = shuffle(
+          foods.filter((food) => food.id !== correctFood.id)
+        ).slice(0, 3);
+
+        return shuffle([correctFood].concat(distractors));
+      }
+
+      function beginRound(questionList, isRetry) {
+        const safeQuestionList = Array.isArray(questionList)
+          ? questionList.filter(Boolean)
+          : [];
+
+        if (safeQuestionList.length === 0) {
+          return;
+        }
+
+        roundQuestions = safeQuestionList.slice();
+        currentIndex = 0;
+        score = 0;
+        currentRoundMissedIds = [];
+        answered = false;
+        lastRoundWasRetry = Boolean(isRetry);
+
+        stopSpeech();
+        showScreen("quiz");
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        const food = roundQuestions[currentIndex];
+
+        answered = false;
+
+        const total = roundQuestions.length;
+
+        progressLabel.textContent =
+          "第 " +
+          (currentIndex + 1) +
+          " / " +
+          total +
+          " 題" +
+          (lastRoundWasRetry ? "・錯題再練" : "");
+
+        progressBar.style.width =
+          (((currentIndex + 1) / total) * 100) +
+          "%";
+
+        progressTrack.setAttribute(
+          "aria-valuemax",
+          String(total)
+        );
+
+        progressTrack.setAttribute(
+          "aria-valuenow",
+          String(currentIndex + 1)
+        );
+
+        foodImage.src = svgData(foodSvg(food));
+        foodImage.alt = food.zh + "的自製插畫";
+
+        questionNumber.textContent =
+          "QUESTION " +
+          String(currentIndex + 1).padStart(2, "0");
+
+        questionHeading.textContent =
+          "這道「" +
+          food.zh +
+          "」的英文是？";
+
+        questionHint.textContent =
+          "看圖選出最適合的英文名稱。點選後會自動朗讀。";
+
+        answerMessage.textContent = "";
+        answerMessage.className = "answer-message";
+
+        nextButton.hidden = true;
+        nextButton.textContent =
+          currentIndex === total - 1
+            ? "結束作答"
+            : "下一題";
+
+        options.replaceChildren();
+
+        const optionFoods = makeOptions(food);
+
+        optionFoods.forEach((optionFood, index) => {
+          const button = document.createElement("button");
+
+          button.type = "button";
+          button.className = "option-btn";
+
+          button.setAttribute(
+            "aria-label",
+            "選項 " +
+            String.fromCharCode(65 + index) +
+            "：" +
+            optionFood.en
+          );
+
+          const letter = document.createElement("span");
+          letter.className = "option-letter";
+          letter.setAttribute("aria-hidden", "true");
+          letter.textContent =
+            String.fromCharCode(65 + index);
+
+          const label = document.createElement("span");
+          label.className = "option-label";
+          label.textContent = optionFood.en;
+
+          button.dataset.foodId = optionFood.id;
+
+          button.append(letter, label);
+
+          button.addEventListener("click", () => {
+            selectAnswer(button, food);
+          });
+
+          options.append(button);
+        });
+      }
+
+      function selectAnswer(selectedButton, correctFood) {
+        if (
+          answered ||
+          !selectedButton ||
+          selectedButton.disabled
+        ) {
+          return;
+        }
+
+        answered = true;
+
+        const selectedId = selectedButton.dataset.foodId;
+        const selectedFood = foods.find(
+          (food) => food.id === selectedId
+        );
+
+        speakOption(selectedButton, selectedFood);
+
+        const allButtons = Array.from(
+          options.querySelectorAll("button")
+        );
+
+        allButtons.forEach((button) => {
+          button.disabled = true;
+        });
+
+        const correctButton = allButtons.find(
+          (button) =>
+            button.dataset.foodId === correctFood.id
+        );
+
+        if (selectedId === correctFood.id) {
+          selectedButton.classList.add("is-correct");
+
+          answerMessage.textContent =
+            "答對了！Great job!";
+
+          answerMessage.classList.add("correct");
+
+          score += 1;
+        } else {
+          selectedButton.classList.add("is-wrong");
+
+          if (correctButton) {
+            correctButton.classList.add("is-correct");
+          }
+
+          answerMessage.textContent =
+            "再想一下！正確答案是「" +
+            correctFood.en +
+            "」。";
+
+          answerMessage.classList.add("wrong");
+
+          if (
+            !currentRoundMissedIds.includes(correctFood.id)
+          ) {
+            currentRoundMissedIds.push(correctFood.id);
+          }
+        }
+
+        nextButton.hidden = false;
+        nextButton.focus();
+      }
+
+      function showResults() {
+        const total = roundQuestions.length;
+        const missedCount = currentRoundMissedIds.length;
+
+        scoreNumber.textContent =
+          score +
+          " / " +
+          total;
+
+        stopSpeech();
+
+        if (missedCount === 0) {
+          resultText.textContent =
+            lastRoundWasRetry
+              ? "再練成績：答對 " +
+                score +
+                " 題；錯題數：0 題。太棒了，全部掌握了！"
+              : "答對了 " +
+                score +
+                " 題；錯題數：0 題。你是台灣美食英文達人！";
+
+          retryButton.hidden = true;
+        } else {
+          resultText.textContent =
+            lastRoundWasRetry
+              ? "再練成績：答對 " +
+                score +
+                " 題；錯題數：" +
+                missedCount +
+                " 題。"
+              : "答對了 " +
+                score +
+                " 題；錯題數：" +
+                missedCount +
+                " 題。還可以繼續練習。";
+
+          retryButton.hidden = false;
+
+          retryButton.textContent =
+            lastRoundWasRetry
+              ? "再練剩餘錯題"
+              : "錯題再練";
+        }
+
+        showScreen("result");
+
+        (
+          retryButton.hidden
+            ? restartButton
+            : retryButton
+        ).focus();
+      }
+
+      startButton.addEventListener("click", () => {
+        beginRound(
+          shuffle(foods).slice(0, 5),
+          false
+        );
+      });
+
+      restartButton.addEventListener("click", () => {
+        beginRound(
+          shuffle(foods).slice(0, 5),
+          false
+        );
+      });
+
+      retryButton.addEventListener("click", () => {
+        const retryIds = currentRoundMissedIds.slice();
+
+        const retryFoods = retryIds
+          .map((id) => foods.find((food) => food.id === id))
+          .filter(Boolean);
+
+        if (retryFoods.length > 0) {
+          beginRound(retryFoods, true);
+        }
+      });
+
+      nextButton.addEventListener("click", () => {
+        if (!answered) {
+          return;
+        }
+
+        if (currentIndex < roundQuestions.length - 1) {
+          currentIndex += 1;
+          renderQuestion();
+          questionHeading.focus();
+        } else {
+          showResults();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
